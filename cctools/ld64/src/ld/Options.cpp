@@ -31,9 +31,11 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#ifndef __APPLE__
 #include <spawn.h>
+#endif
 #include <cxxabi.h>
-#include <Availability.h>
+#include <AvailabilityMacros.h>
 
 #include <vector>
 

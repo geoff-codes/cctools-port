@@ -66,6 +66,11 @@ if test "x$isdarwin" = "xno"; then
       fi
     ;;
   esac
+else
+  if test "x$build" = "x$host"; then
+    MACOSX_VERSION=`sw_vers -productVersion | sed 's|\(10.[[0-9]]*\).*|\1|'`
+    EXTRAFLAGS=-DDEFAULT_MACOSX_MIN_VERSION="\\\"$MACOSX_VERSION\\\""
+  fi
 fi
 
 if test "x$XCC" = "x"; then
@@ -127,6 +132,8 @@ case "$CCVERSION" in
     CXXFLAGS="$CXXFLAGS -D__private_extern__="
   ;;
 esac
+
+
 
 case "$CXXVERSION" in
   *clang* )

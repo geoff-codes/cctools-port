@@ -45,8 +45,6 @@
 #endif
 
 #include <mach/i386/thread_status.h>
-#include <Availability.h>
-
 #include "FileAbstraction.hpp"
 #include "libunwind.h"
 #include "InternalMacros.h"

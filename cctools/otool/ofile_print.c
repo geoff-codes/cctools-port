@@ -3704,7 +3704,11 @@ struct load_command *lc)
 	    if(left > 0){
 		i++;
 		printf("  string #%d %.*s\n", i, left, string);
-		len = strnlen(string, left) + 1;
+#if defined(__APPLE__) && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1050
+		len = strlen(string) + 1;
+#else
+    len = strnlen(string, left) + 1;
+#endif
 		string += len;
 		left -= len;
 	    }

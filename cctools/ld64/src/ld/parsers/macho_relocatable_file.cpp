@@ -6655,7 +6655,7 @@ bool Section<A>::addRelocFixup_powerpc(class Parser<A>& parser,
 				// this is from -mlong-branch codegen.  We ignore the jump island and make reference to the real target
 				if ( nextReloc->r_type() != PPC_RELOC_PAIR )
 					throw "PPC_RELOC_JBSR missing following pair";
-				if ( !parser._hasLongBranchStubs )
+				if ( !parser._hasLongBranchStubs && !strstr(parser._path, "/usr/lib/crt1.o") )
 					warning("object file compiled with -mlong-branch which is no longer needed. "
 							"To remove this warning, recompile without -mlong-branch: %s", parser._path);
 				parser._hasLongBranchStubs = true;

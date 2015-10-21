@@ -29,6 +29,9 @@
 #include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
+#ifdef __APPLE__
+#include <stdlib.h>
+#endif
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -446,7 +449,7 @@ void Rebaser<A>::adjustSymbolTable()
 		}
 	}
 	
-	// FIXME еее adjust dylib_module if it exists
+	// FIXME adjust dylib_module if it exists
 }
 
 static uint64_t read_uleb128(const uint8_t*& p, const uint8_t* end)

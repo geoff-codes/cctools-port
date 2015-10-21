@@ -1261,7 +1261,11 @@ uint8_t* HeaderAndLoadCommandsAtom<x86>::copyThreadsLoadCommand(uint8_t* p) cons
 template <>
 uint32_t HeaderAndLoadCommandsAtom<x86_64>::threadLoadCommandSize() const
 {
-	return this->alignedSize(16 + x86_THREAD_STATE64_COUNT * 4); 
+#ifdef __APPLE__
+	return this->alignedSize(16 + 42*4);	// base size + x86_THREAD_STATE64_COUNT * 4
+#else
+   return this->alignedSize(16 + x86_THREAD_STATE64_COUNT * 4);
+#endif
 }
 
 template <>
@@ -1272,8 +1276,13 @@ uint8_t* HeaderAndLoadCommandsAtom<x86_64>::copyThreadsLoadCommand(uint8_t* p) c
 	macho_thread_command<P>* cmd = (macho_thread_command<P>*)p;
 	cmd->set_cmd(LC_UNIXTHREAD);
 	cmd->set_cmdsize(threadLoadCommandSize());
-	cmd->set_flavor(x86_THREAD_STATE64);			
-	cmd->set_count(x86_THREAD_STATE64_COUNT);	
+#ifdef __APPLE__
+	cmd->set_flavor(4);				// x86_THREAD_STATE64
+	cmd->set_count(42);				// x86_THREAD_STATE64_COUNT
+#else
+  cmd->set_flavor(x86_THREAD_STATE64);
+  cmd->set_count(x86_THREAD_STATE64_COUNT);
+#endif
 	cmd->set_thread_register(16, start);		// rip 
 	if ( _options.hasCustomStack() )
 		cmd->set_thread_register(7, _options.customStackAddr());	// r1

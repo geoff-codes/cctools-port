@@ -633,7 +633,7 @@ void OutputFile::rangeCheckAbsolute32(int64_t displacement, ld::Internal& state,
 #if SUPPORT_ARCH_arm_any
 			|| (_options.architecture() == CPU_TYPE_ARM)
 #endif
-			|| (_options.architecture() == CPU_TYPE_I386) ) {
+			|| (_options.architecture() == CPU_TYPE_I386) || (_options.architecture() == CPU_TYPE_POWERPC)) {
 			// Unlikely userland code does funky stuff like this, so warn for them, but not warn for -preload or -static
 			if ( (_options.outputKind() != Options::kPreload) && (_options.outputKind() != Options::kStaticExecutable) ) {
 				warning("32-bit absolute address out of range (0x%08llX max is 4GB): from %s + 0x%08X (0x%08llX) to 0x%08llX", 

@@ -25,6 +25,20 @@
 #ifndef __OPTIONS__
 #define __OPTIONS__
 
+#ifdef __APPLE__
+#ifndef __MAC_OS_X_VERSION_MIN_REQUIRED
+#define __MAC_OS_X_VERSION_MIN_REQUIRED __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__
+#endif
+#endif
+
+#ifndef DEFAULT_MACOSX_MIN_VERSION
+#define DEFAULT_MACOSX_MIN_VERSION "10.4"
+#endif
+
+#ifndef DEFAULT_IPHONEOS_MIN_VERSION
+#define DEFAULT_IPHONEOS_MIN_VERSION "3.0"
+#endif
+
 
 #include <stdint.h>
 #include <mach/machine.h>
