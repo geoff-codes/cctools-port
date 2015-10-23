@@ -11,6 +11,26 @@ AC_DEFUN([CHECK_LLVM],
     [LLVM_CONFIG=$with_llvm_config], [LLVM_CONFIG=no])
 
     if test "x$enable_lto" = "xyes"; then
+        if test "x$isdarwin" = "xyes"; then
+          LLVM_LIB_DIR="`xcrun -f ld 2>/dev/null | sed 's|bin/ld|lib|'`"
+          if test -e "$LLVM_LIB_DIR/libLTO.dylib"; then
+              ORIGLDFLAGS=$LDFLAGS
+              LDFLAGS="$LDFLAGS -L${LLVM_LIB_DIR}"
+
+              AC_CHECK_LIB([LTO],[lto_get_version],
+               [ if test `uname -r | sed 's|\..*$||'` -gt 8; then
+                   LTO_LIB="-L$LLVM_LIB_DIR -Wl,-rpath,$LLVM_LIB_DIR -lazy-lLTO"
+                 else
+                   LTO_LIB="-L${LLVM_LIB_DIR} -lLTO"
+                 fi
+                   LTO_DEF=-DLTO_SUPPORT
+
+                   AC_SUBST([LTO_DEF])
+                   AC_SUBST([LTO_LIB]) ])
+          fi
+        fi
+
+      if test "x$LTO_LIB" = "x"; then
         if test "x$LLVM_CONFIG" = "xno"; then
             AC_PATH_PROGS(LLVM_CONFIG,
                 [llvm-config                                    \
@@ -22,6 +42,7 @@ AC_DEFUN([CHECK_LLVM],
                 llvm-config32 llvm-config31],
             no)
         fi
+      fi
 
         if test "x$LLVM_CONFIG" != "xno"; then
             LLVM_INCLUDE_DIR="`${LLVM_CONFIG} --includedir`"
@@ -32,7 +53,11 @@ AC_DEFUN([CHECK_LLVM],
 
             AC_CHECK_LIB([LTO],[lto_get_version],
              [ if test "x$isdarwin" = "xyes"; then
-                   LTO_LIB="-L${LLVM_LIB_DIR} -lazy-lLTO"
+                 if test `uname -r | sed 's|\..*$||'` -gt 8; then
+                   LTO_LIB="-L$LLVM_LIB_DIR -Wl,-rpath,$LLVM_LIB_DIR -lazy-lLTO"
+                 else
+                   LTO_LIB="-L${LLVM_LIB_DIR} -lLTO"
+                 fi
                else
                    LTO_LIB="-L${LLVM_LIB_DIR} -lLTO"
                fi
@@ -50,7 +75,9 @@ AC_DEFUN([CHECK_LLVM],
                AC_SUBST([LTO_LIB]) ])
 
             LDFLAGS=$ORIGLDFLAGS
-        else
+        fi
+
+        if test "x$LTO_LIB" = "x"; then
             AC_MSG_WARN([llvm-config not found, disabling LTO support])
         fi
     fi

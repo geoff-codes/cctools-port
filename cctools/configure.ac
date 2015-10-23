@@ -71,6 +71,7 @@ else
     MACOSX_VERSION=`sw_vers -productVersion | sed 's|\(10.[[0-9]]*\).*|\1|'`
     EXTRAFLAGS=-DDEFAULT_MACOSX_MIN_VERSION="\\\"$MACOSX_VERSION\\\""
   fi
+  WARNINGS="-Wno-unknown-warning-option" # Missing -Wno-shift-negative-value
 fi
 
 if test "x$XCC" = "x"; then
