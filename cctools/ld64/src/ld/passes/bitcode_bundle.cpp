@@ -152,6 +152,11 @@ protected:
     size_t                              _file_size;
 };
 
+/* cctools-backport: hack to allow building with GCC 4.6, which lacks override */
+#if !defined(__clang__) && ((__GNUC__ == 4) && (__GNUC_MINOR < 7))
+#define override
+#endif
+
 class BundleHandler : public FileHandler {
 public:
     BundleHandler(char* bundleContent, size_t bundleSize, const Options& options) :
@@ -196,6 +201,10 @@ public:
 
     void populateMustPreserveSymbols(BitcodeObfuscator* obfuscator) override;
     void obfuscateAndWriteToPath(BitcodeObfuscator* obfuscator, const char* path) override;
+
+#if !defined(__clang__) && ((__GNUC__ == 4) && (__GNUC_MINOR < 7))
+#undef override
+#endif
 
 };
 
