@@ -65,6 +65,16 @@
 #include "MachOFileAbstraction.hpp"
 #include "Snapshot.h"
 
+#if defined(__APPLE__) && defined(__ppc__) && ! defined(__ppc64__)
+/* cctools-backport: no OSAtomicAdd64 on ppc 32-bit, implement using C++11 */
+
+#include <atomic>
+int64_t OSAtomicAdd64(int64_t theAmount, volatile int64_t *theValue)
+{
+return std::atomic_fetch_add((volatile std::atomic<int64_t> *)&theValue, theAmount);
+}
+#endif
+
 const bool _s_logPThreads = false;
 
 namespace ld {

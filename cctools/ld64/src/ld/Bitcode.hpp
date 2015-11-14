@@ -53,6 +53,10 @@ private:
     const uint8_t* _cmdline;
     uint32_t _cmdSize;
 };
+/* cctools-backport: hack to allow building with GCC 4.6, which lacks override */
+#if !defined(__clang__) && ((__GNUC__ == 4) && (__GNUC_MINOR < 7))
+#define override
+#endif
 
 class ClangBitcode : public LLVMBitcode {
 public:
@@ -80,6 +84,11 @@ public:
     BundleBitcode(const uint8_t* content, uint32_t size) :
         Bitcode(content, size)  { }
 };
+
+/* cctools-backport: hack to allow building with GCC 4.6, which lacks override */
+#if !defined(__clang__) && ((__GNUC__ == 4) && (__GNUC_MINOR < 7))
+#undef override
+#endif
 
 }
 
