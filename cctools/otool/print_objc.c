@@ -32,8 +32,12 @@
 #include "string.h"
 #include "stdint.h"            /* cctools-port: intptr_t */
 #include "mach-o/loader.h"
+#ifdef __APPLE__ /* cctools-backport */
+#include <objc/objc-runtime.h>
+#else
 #include "objc/runtime.h"      /* cctools-port:
 				  objc/objc-runtime.h -> objc/runtime.h */
+#endif
 #include "stuff/allocate.h"
 #include "stuff/bytesex.h"
 #include "stuff/symbol.h"
@@ -638,8 +642,12 @@ print_objc_class:
 			printf("\n");
 		    printf("\t\t      isa 0x%08x", objc_class.isa);
 
+#ifndef __APPLE__ /* cctools-backport */
 		    /* cctools-port: added (const char*)(intptr_t) */
 		    if(verbose && objc_getMetaClass((const char*)(intptr_t)objc_class.name)){
+#else
+		    if(verbose){
+#endif
 			p = get_pointer(objc_class.isa, &left, objc_sections,
 					nobjc_sections, &cstring_section);
 			if(p != NULL)
@@ -678,11 +686,19 @@ print_objc_class:
 		    printf("\t\t     info 0x%08x",
 			   (unsigned int)objc_class.info);
 		    if(verbose){
+#ifndef __APPLE__ /* cctools-backport */
 			/* cctools-port: added (const char*)(intptr_t) */
 			if(objc_getClass((const char*)(intptr_t)objc_class.name))
+#else
+			if(CLS_GETINFO(&objc_class, CLS_CLASS))
+#endif
 			    printf(" CLS_CLASS\n");
+#ifndef __APPLE__
 			/* cctools-port: added (const char*)(intptr_t) */
 			else if(objc_getMetaClass((const char*)(intptr_t)objc_class.name))
+#else
+			else if(CLS_GETINFO(&objc_class, CLS_META))
+#endif
 			    printf(" CLS_META\n");
 			else
 			    printf("\n");
@@ -772,8 +788,12 @@ print_objc_class:
 			host_byte_sex, swapped, verbose) == FALSE)
 			printf(" (not in an " SEG_OBJC " section)\n");
 
+#ifndef __APPLE__ /* cctools-backport */
 		    /* cctools-port: added (const char*)(intptr_t) */
 		    if(objc_getClass((const char*)(intptr_t)objc_class.name)){
+#else
+		    if(CLS_GETINFO((&objc_class), CLS_CLASS)){
+#endif
 			printf("\tMeta Class");
 			if(get_objc_class((uint32_t)objc_class.isa,
 			     &objc_class, &trunc, objc_sections, nobjc_sections,

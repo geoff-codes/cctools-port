@@ -38,8 +38,6 @@
   1999-05-03 lpd Original version.
  */
 
-#ifndef __APPLE__
-
 #include "md5.h"
 #include "string.h"
 
@@ -392,5 +390,3 @@ md5_finish(md5_state_t *pms, md5_byte_t digest[16])
     for (i = 0; i < 16; ++i)
 	digest[i] = (md5_byte_t)(pms->abcd[i >> 2] >> ((i & 3) << 3));
 }
-
-#endif /* ! __APPLE__ */

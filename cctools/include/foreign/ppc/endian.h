@@ -124,8 +124,10 @@
 
 #define	BYTE_ORDER	__DARWIN_BYTE_ORDER
 
+#if ! (defined(__APPLE__) && defined(__ppc__))  /* cctools-backport */
 #if defined(__has_include) && __has_include(<sys/_endian.h>) /* cctools-port */
 #include <sys/_endian.h>
+#endif
 #endif
 
 #endif /* defined(KERNEL) || (!defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE)) */
