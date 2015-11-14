@@ -1,6 +1,9 @@
+#ifdef __APPLE__ /* cctools-backport */
+const char ldVersionString[] = "@(#)PROGRAM:ld  PROJECT:ld64-253.3\n";
+#else
 const char ldVersionString[] = "253.3\n";
-
 #ifndef __APPLE__
+#endif
 
 #include <unistd.h> 
 #include <mach/mach.h>

@@ -1,9 +1,3 @@
-#ifdef __APPLE__
-
-#include_next <CommonCrypto/CommonDigest.h>
-
-#else
-
 #include "md5.h"
 #include "assert.h"
 
@@ -44,5 +38,3 @@ static unsigned char *CC_MD5(const void *data, unsigned long nbytes,
 
     return md;
 }
-
-#endif /* __APPLE__ */

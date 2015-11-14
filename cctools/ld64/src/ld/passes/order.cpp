@@ -32,7 +32,9 @@
 #include <vector>
 #include <map>
 #include <set>
+#ifndef __APPLE__ /* cctools-backport */
 #include <unordered_map>
+#endif
 
 #include "ld.hpp"
 #include "order.h"
