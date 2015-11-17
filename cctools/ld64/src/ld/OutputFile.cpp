@@ -4457,7 +4457,7 @@ void OutputFile::addClassicRelocs(ld::Internal& state, ld::Internal::FinalSectio
 		// with pointer diffs, both need to be in same linkage unit
 		assert(minusTarget->definition() != ld::Atom::definitionProxy);
 		assert(target != NULL);
-#if 0 /* cctools-backport: Why does this assert even exist? */
+#if 0 /* cctools-backport: Why does this "annoying" assert even exist? Breaks stuff that's not broken. */
 		if ( ! getenv("DISABLE_ANNOYING_LD64_ASSERTION") )
 				assert(target->definition() != ld::Atom::definitionProxy);
 #endif

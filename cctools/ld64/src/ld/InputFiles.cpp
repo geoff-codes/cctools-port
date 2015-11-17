@@ -66,13 +66,45 @@
 #include "Snapshot.h"
 
 #if defined(__APPLE__) && defined(__ppc__) && ! defined(__ppc64__)
-/* cctools-backport: no OSAtomicAdd64 on ppc 32-bit, implement using C++11 */
+/* cctools-backport: There's no OSAtomicAdd64 on ppc 32-bit because there are no native
+   8-byte-aligned ops. We can't use the gcc (and clang) __sync_add_and_fetch intrinsic
+   either, as here:
+   https://github.com/darlinghq/darling/blob/master/src/libSystem/libc/OSAtomic.cpp#L97
+   for (assumedly) the same reasons. But, we *can* take advantage of some c[++]11 atomics.
+   Unfortunately, clang > 3.4 uses CFI mnemonics incompatible with Apple's ancient GAS,
+   and the clang integrated assembler doesn't produce output that works well on ancient
+   powerpc-apple-darwin8. Lacking a stdatomic.h, we can't use the "standard" `atomic_`s,
+   but with GCC 4.8+ we can use the intrinsic `__atomic`s by linking to libatomic.
+   Alternatively, we might be able to use the C++11 std::atomic_add_fetch, available on
+   some older compiler versions, but it's I'm not sure if the casting necessary preserves
+   atomicity. One last thought: its highly unlikely that there would every be mutiple
+   processors/core on an old Macs running 10.4, (the only sold a few dual-processor G5
+   towers, so maybe we could just try regular old addition?                             */
+
+#if   !defined(__clang__) && ((__GNUC__ == 4) && (__GNUC_MINOR > 7))
+
+int64_t OSAtomicAdd64(int64_t theAmount, volatile int64_t *theValue) {
+  return __atomic_add_fetch(theValue, theAmount, __ATOMIC_ACQ_REL);
+}
+
+#elif !defined(__clang__) && (__cplusplus > 199711L)
+/* cctools-backport:
+         unfortunately, clang++ with libc++[abi] 3.4 segfaults here */
 
 #include <atomic>
-int64_t OSAtomicAdd64(int64_t theAmount, volatile int64_t *theValue)
-{
-return std::atomic_fetch_add((volatile std::atomic<int64_t> *)&theValue, theAmount);
+
+int64_t OSAtomicAdd64(int64_t theAmount, volatile int64_t *theValue) {
+  std::atomic_fetch_add((volatile std::atomic<int64_t> *)theValue, theAmount);
+  return *theValue;
 }
+
+#else
+
+int64_t OSAtomicAdd64(int64_t theAmount, volatile int64_t *theValue) {
+  return *theValue + theAmount;
+}
+
+#endif
 #endif
 
 const bool _s_logPThreads = false;
